@@ -123,11 +123,19 @@ AND nt.country LIKE 'A%';
 INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (12,6,'SELECT nt.Country, nt.year, p.name, p.surname FROM nationalteam AS nt, headcoach AS h, person AS p WHERE nt.IDCardHeadCoach  = h.IDCard AND h.IDCard = p.IDCard AND nt.year BETWEEN 2010 AND 2015 AND nt.country LIKE "A%";');
 
 -- 13. Per un any específic retorna per cada equip la suma dels salaris dels seus jugadors. Asumeix que tots els jugadors que tenen un contracte en qualsevol data de l'any 2007 s'ha de contabilitzar. Quin és el presupost dels Houston Rockets?
-SELECT f.name,  SUM(pf.salary) FROM franchise AS f, player_franchise AS pf
-WHERE f.name = pf.franchiseName 
-AND (YEAR(pf.startContract) = 2007 OR YEAR(pf.EndContract) = 2007 OR (YEAR(pf.startContract) < 2007 AND YEAR(pf.EndContract) > 2007))
-GROUP BY f.name
-HAVING f.name = 'Houston Rockets'; --- ERRORRR
+SELECT f.name,  SUM(pf.salary) FROM franchise AS f, 
+JOIN player_franchise AS pf ON f.name = pf.franchiseName 
+WHERE (YEAR(pf.startContract) = 2007 OR YEAR(pf.EndContract) = 2007 OR (YEAR(pf.startContract) < 2007 AND YEAR(pf.EndContract) > 2007))
+AND f.name = 'Houston Rockets'
+GROUP BY f.name;
+ --- ERRORRR
+
+
+SELECT f.name,  SUM(pf.salary) FROM franchise AS f 
+JOIN player_franchise AS pf ON f.name = pf.franchiseName 
+WHERE (YEAR(pf.startContract) <= 2007 OR YEAR(pf.EndContract) >= 2007) AND f.name = 'Houston Rockets'
+GROUP BY f.name;
+-- 393183118
 
 --ALEXANDRA--
 --21.Per cada especialitat d'entrenadors assistents, retorna quants n'ha tingut cada franquícia. Qunatsmetges tenen els Brooklin Nets?
