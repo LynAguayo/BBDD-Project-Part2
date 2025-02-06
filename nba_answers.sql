@@ -104,6 +104,13 @@ FROM headcoach AS h
 JOIN person AS p ON h.IDCard = p.IDCard
 WHERE h.IDCard = 100000004;
 
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (10, 5002, 'SELECT h.IDCard, p.Name, p.Surname, 
+       (h.VictoryPercentage / 100) * (h.Salary / 1000) AS rendiment,
+       FLOOR((h.VictoryPercentage / 100) * (h.Salary / 1000)) AS rendiment_no_Decimals
+        FROM headcoach AS h
+        JOIN person AS p ON h.IDCard = p.IDCard
+        WHERE h.IDCard = 100000004;');
+
 -- EVELYN :) --
 
 -- 11. Per cada equip retorna quantes vegades ha guanyat. Sempre que siguin 3 vegades o més. Quantes files retorna el select?
