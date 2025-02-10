@@ -1,6 +1,109 @@
 -- Formato respuesta
 INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES ('ID DE LA PREGUNTA', 'VALOR SOLUCIO', 'SQL QUERY')
 
+-- 1. Quants estadis hi ha?
+SELECT COUNT(*) FROM arena;INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES ('1', '29', 'SELECT COUNT(*) FROM arena;')
+
+-- 11. Per cada equip ret-- 2. Obté el nom i cognom de l'entrenador principal de cada franquícia. Quin és el cognom de l'entrenador de Utah Jazz?
+SELECT p.name, p.INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES ('1', '29', 'SELECT COUNT(*) FROM arena;')
+SELECT p.name, p.surname FROM person AS p 
+JOIN headcoach AS h ON p.IDCard = h.IDCard
+JOIN franchise AS f ON f.IDCardCoach = h.IDCard
+WHERE f.Name = 'Utah Jazz';
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (2, 'Brooks', 'SELECT p.name, p.surname FROM person AS p 
+JOIN headcoach AS h ON p.IDCard = h.IDCard
+JOIN franchise AS f ON f.IDCardCoach = h.IDCard
+WHERE f.Name = "Utah Jazz";');
+
+-- 3. Troba el nom de la franquícia amb el pressupost més gran.
+SELECT f.name FROM franchise AS f
+ORDER BY f.budget DESC
+LIMIT 1;
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (3, 'Chicago Bulls', 'SELECT f.name FROM franchise AS f
+ORDER BY f.budget DESC
+LIMIT 1;'); 
+
+-- 4. Llista les arenes (noms i ciutats) de les franquícies de la conferència oest. Quin és el nom de la 5a ciutat?
+SELECT a.name, a.city FROM arena AS a
+JOIN franchise AS f ON f.ArenaName = a.Name
+WHERE f.ConferenceName = 'Western Conference'
+ORDER BY a.City ASC;
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (4, 'Los Angeles', 'SELECT a.name, a.city FROM arena AS a
+JOIN franchise AS f ON f.ArenaName = a.Name
+WHERE f.ConferenceName = "Western Conference"
+ORDER BY a.City ASC;');
+
+-- 5. Llista els noms dels jugadors que han estat seleccionats en el draft en primera, segona o tercera posició al draft del 2020. 
+-- Ordena pel cognom i nom del jugador (Z-A). Quin és el nom del jugador mostrat en la primera fila 
+SELECT p.name FROM person AS p 
+JOIN player AS pl ON pl.IDCard = p.IDCard
+JOIN draft_player_franchise AS dpf ON dpf.IDCardPlayer = pl.IDCard
+WHERE draftYear = 2020 AND dpf.position IN (1, 2, 3)
+ORDER BY p.surname DESC, p.name DESC;
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (5, 'Evan', 'SELECT p.name FROM person AS p 
+JOIN player AS pl ON pl.IDCard = p.IDCard
+JOIN draft_player_franchise AS dpf ON dpf.IDCardPlayer = pl.IDCard
+WHERE draftYear = 2020 AND dpf.position IN (1, 2, 3)
+ORDER BY p.surname DESC, p.name DESC;');
+
+
+-- 6. Recupera els noms dels jugadors que tenen una data de naixement anterior al març de 1980. Quin és el nom del jugador de cognom Lue que apareix als primers resultats?
+SELECT p.name FROM person AS p 
+JOIN player AS pl ON pl.IDCard = p.IDCard
+WHERE p.BirthDate < "1980-03-01"
+AND p.surname = "Lue";
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (6, 'Tyronn', 'SELECT p.name FROM person AS p 
+JOIN player AS pl ON pl.IDCard = p.IDCard
+WHERE p.BirthDate < "1980-03-01"
+AND p.surname = "Lue";'); 
+
+-- 7. Per cada arena, digues el nombre de seients VIP que hi ha. Quants en te el Madison Square Garden?
+SELECT COUNT(*)
+FROM zone AS z
+JOIN seat AS s ON z.ArenaName = s.ArenaName AND z.Code = s.ZoneCode
+WHERE z.IsVip = TRUE AND z.ArenaName = 'Madison Square Garden';
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (7, 1620, 'SELECT COUNT(*)
+FROM zone AS z
+JOIN seat AS s ON z.ArenaName = s.ArenaName AND z.Code = s.ZoneCode
+WHERE z.IsVip = TRUE AND z.ArenaName = "Madison Square Garden";'); 
+
+-- 8. Tenim guardat els colors dels seients de tots els estadis. Retorna quants seients blaus hi ha en total.
+SELECT COUNT(*) FROM seat
+WHERE color = "blue";
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (8, 36402, 'SELECT COUNT(*) FROM seat WHERE color = "blue";');
+
+-- 9. Retorna la mitjana de seients (arrodonint sense decimals) per color d’entre tots els estadis. Quina es la mitjana dels platejats?
+SELECT ROUND(AVG(COUNT_SEATS.NumSeats))
+FROM (
+    SELECT s.Color, COUNT(*) AS NumSeats
+    FROM seat AS s
+    GROUP BY s.ArenaName, s.Color
+) AS COUNT_SEATS
+WHERE COUNT_SEATS.Color = "Silver";
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (9, 1256, 'SELECT ROUND(AVG(COUNT_SEATS.NumSeats))
+FROM (
+    SELECT s.Color, COUNT(*) AS NumSeats
+    FROM seat AS s
+    GROUP BY s.ArenaName, s.Color
+) AS COUNT_SEATS
+WHERE COUNT_SEATS.Color = "Silver";');
+
+-- 10. Retorna els entrenadors principals amb el seu rendiment segons el salari (rendiment = (VictoryPercentage / 100) * (Salary / 1000)), tallant els decimals que resultin. Quin és el rendiment de l'entrenador 100000004?
+SELECT h.IDCard, p.Name, p.Surname, 
+       (h.VictoryPercentage / 100) * (h.Salary / 1000) AS rendiment,
+       FLOOR((h.VictoryPercentage / 100) * (h.Salary / 1000)) AS rendiment_no_Decimals
+FROM headcoach AS h
+JOIN person AS p ON h.IDCard = p.IDCard
+WHERE h.IDCard = 100000004;
+
 
 -- 11. Per cada equip retorna quantes vegades ha guanyat. Sempre que siguin 3 vegades o més. Quantes files retorna el select?
 SELECT  f.name, COUNT(f.name) AS contador FROM franchise AS f, franchise_season AS frans 
