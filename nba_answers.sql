@@ -163,7 +163,6 @@ LIMIT 2,1;
 
 INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (16,1976,'SELECT DISTINCT p.IDCard, p.name, p.surname, p.birthDate FROM person AS p JOIN assistantcoach As a ON p.IDCard = a.IDCard WHERE a.IDCard IN (SELECT DISTINCT IDCardBoss FROM assistantcoach WHERE IDCardBoss IS NOT NULL) AND a.especiality = "Psychologist" AND p.birthDate IS NOT NULL ORDER BY p.surname, p.name LIMIT 2,1;'); 
 
-
 -- 17. Volem saber quantes franquícies hi ha per a cada conferència. Mostra totes les dades relacionades amb la conferència i un nou camp amb el recompte. Quantes franquícies hi ha acada conferència?
 SELECT c.name, c.GeographicZone, COUNT(f.ConferenceName) AS contador
 FROM franchise AS f, conference AS c 
@@ -202,10 +201,211 @@ LIMIT 2,1;
 
 INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (20,'Toronto Raptors','SELECT f.name FROM franchise AS f JOIN franchise_season AS fs ON f.name = fs.franchiseName GROUP BY f.name HAVING COUNT(DISTINCT fs.regularSeasonYear) = (SELECT COUNT(DISTINCT year) FROM regularseason) ORDER BY f.name DESC LIMIT 2,1;'); 
 
-
 -- 21. Per cada especialitat d'entrenadors assistents, retorna quants n'ha tingut cada franquícia. Qunatsmetges tenen els Brooklin Nets?
 SELECT COUNT(a.especiality), a.FranchiseName FROM assistantcoach a 
 	WHERE Especiality ="Doctor"
 	AND FranchiseName="Brooklyn Nets"
 	GROUP BY FranchiseName ;
-	
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (21,5,'SELECT COUNT(a.especiality), a.FranchiseName FROM assistantcoach a 
+	WHERE Especiality ="Doctor"
+	AND FranchiseName="Brooklyn Nets"
+	GROUP BY FranchiseName ;')	
+
+-- 22. Troba quantes persones han nascut en un any en el qual no hi ha registrat un draft
+SELECT COUNT(*) FROM person p
+	WHERE NOT EXISTS (
+   		SELECT Year 
+    	FROM draft d 
+    	WHERE YEAR(p.birthDate) = d.Year
+	)
+	AND YEAR(p.BirthDate) IS NOT NULL
+	ORDER BY p.IDCard;
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (22,551,'SELECT COUNT(*) FROM person p
+	WHERE NOT EXISTS (
+   		SELECT Year 
+    	FROM draft d 
+    	WHERE YEAR(p.birthDate) = d.Year
+	)
+	AND YEAR(p.BirthDate) IS NOT NULL
+	ORDER BY p.IDCard;')	
+
+
+-- 23. Quants entrenadors cobren més que qualsevol jugador?
+SELECT COUNT(*) FROM headcoach h WHERE
+	h.Salary > (SELECT MAX(pf.Salary) FROM player_franchise pf);
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (23,82,'SELECT COUNT(*) FROM headcoach h WHERE
+	h.Salary > (SELECT MAX(pf.Salary) FROM player_franchise pf);')	
+
+-- 24. Omple la columna NBARings de la taula de Franquícies. Aquest camp es pot calcular mitjançant la taula Franchise_Season contant quantes vegades han guanyat. Utilitza una declaració UPDATE. Un cop ho tingueu, trobeu quantes franquícies tenen 4 o més anells.
+
+--Update
+UPDATE franchise f SET NBARings=(SELECT COUNT(*) FROM franchise_season fs WHERE fs.IsWinner=1 AND f.Name=fs.FranchiseName
+	GROUP BY fs.FranchiseName);
+--Filtrar los que tienen mas de 4 anillos
+SELECT COUNT(*) FROM franchise f WHERE NBARings >= 4;
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (24,3,'--Update
+UPDATE franchise f SET NBARings=(SELECT COUNT(*) FROM franchise_season fs WHERE fs.IsWinner=1 AND f.Name=fs.FranchiseName
+	GROUP BY fs.FranchiseName);
+--Filtrar los que tienen mas de 4 anillos
+SELECT COUNT(*) FROM franchise f WHERE NBARings >= 4;')	
+
+-- 25. Troba el nom de la franquícia amb el valor de budjet més petit.
+SELECT f.Name FROM franchise f WHERE f.Budget = (SELECT MIN(f2.Budget) FROM franchise f2);
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (25,'New Orleans Pelicans','SELECT f.Name FROM franchise f WHERE f.Budget = (SELECT MIN(f2.Budget) FROM franchise f2);')	
+
+-- 26. Troba la ciutat de l'arena que tingui més seients sempre i quan siguin més de 18000 (veure taules seat i arena, NO utilitzar Capacity)
+SELECT a.City FROM arena a WHERE a.Name=(
+	SELECT s.ArenaName 
+	FROM seat s 
+	GROUP BY s.ArenaName
+	HAVING COUNT(*) > 18000
+	ORDER BY COUNT(*) DESC
+	LIMIT 1);
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (26,'Chicago','SELECT a.City FROM arena a WHERE a.Name=(
+	SELECT s.ArenaName 
+	FROM seat s 
+	GROUP BY s.ArenaName
+	HAVING COUNT(*) > 18000
+	ORDER BY COUNT(*) DESC
+	LIMIT 1);')	
+
+-- 27. Retorna la ID del jugador i el nom de la seva franquicia que han quedat primers al draft i al mateix any d'aquest han gunayat la temporada regular. Retorna la ID de l'únic que te Universitat d'origen.
+SELECT p.IDCard FROM player p
+	JOIN draft_player_franchise dpf ON p.IDCard =dpf.IDCardPlayer
+	JOIN player_franchise pf ON p.IDCard =pf.IDCardPlayer
+	JOIN franchise_season fs ON pf.FranchiseName =fs.FranchiseName
+	WHERE dpf.DraftYear =fs.RegularSeasonYear 
+	AND fs.IsWinner =1
+	AND dpf.`Position` =1
+	AND p.UniversityOfOrigin IS NOT NULL;
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (27,100012078,'SELECT p.IDCard FROM player p
+	JOIN draft_player_franchise dpf ON p.IDCard =dpf.IDCardPlayer
+	JOIN player_franchise pf ON p.IDCard =pf.IDCardPlayer
+	JOIN franchise_season fs ON pf.FranchiseName =fs.FranchiseName
+	WHERE dpf.DraftYear =fs.RegularSeasonYear 
+	AND fs.IsWinner =1
+	AND dpf.`Position` =1
+	AND p.UniversityOfOrigin IS NOT NULL;')	
+
+-- 28. Retorna els paisos amb més de 50 jugadors, 3 entrenadors i 10 assistents de paisos que tinguin selecció. Quin país apareix als resultats?
+SELECT n.Country FROM nationalteam n 
+	WHERE n.Country IN
+		(SELECT p.Nationality FROM person p 
+			JOIN player p2 ON p.IDCard =p2.IDCard
+			GROUP BY p.Nationality
+			HAVING COUNT(*) > 50)
+	AND n.Country  IN
+		(SELECT n2.Country FROM nationalteam n2
+			GROUP BY n2.Country
+			HAVING COUNT(*) >3)
+	AND n.Country  IN
+		(SELECT p.Nationality FROM person p 
+			JOIN assistantcoach a ON p.IDCard =a.IDCard
+			GROUP BY p.Nationality
+			HAVING COUNT(*) >10)
+	GROUP BY n.Country 
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (28,'united states','SELECT n.Country FROM nationalteam n 
+	WHERE n.Country IN
+		(SELECT p.Nationality FROM person p 
+			JOIN player p2 ON p.IDCard =p2.IDCard
+			GROUP BY p.Nationality
+			HAVING COUNT(*) > 50)
+	AND n.Country  IN
+		(SELECT n2.Country FROM nationalteam n2
+			GROUP BY n2.Country
+			HAVING COUNT(*) >3)
+	AND n.Country  IN
+		(SELECT p.Nationality FROM person p 
+			JOIN assistantcoach a ON p.IDCard =a.IDCard
+			GROUP BY p.Nationality
+			HAVING COUNT(*) >10)
+	GROUP BY n.Country ')	
+
+-- 29. Retorna els headcoach que entrenin equips nacionals amb el salari més gran o el percentantge de victòria més petit, d'entre els que entrenen equips nacionals. Quan sumen els salaris dels entrenadors resultants?
+SELECT SUM(h.Salary) FROM headcoach h 
+	JOIN nationalteam n ON h.IDCard=n.IDCardHeadCoach
+	WHERE h.Salary = (SELECT MAX(h2.Salary) 
+					  FROM headcoach h2
+					  JOIN nationalteam n2 ON h2.IDCard=n2.IDCardHeadCoach)
+	OR h.VictoryPercentage= (SELECT MIN(h3.VictoryPercentage) 
+							 FROM headcoach h3
+							 JOIN nationalteam n3 ON h3.IDCard =n3.IDCardHeadCoach)
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (29,10899000,'SELECT SUM(h.Salary) FROM headcoach h 
+	JOIN nationalteam n ON h.IDCard=n.IDCardHeadCoach
+	WHERE h.Salary = (SELECT MAX(h2.Salary) 
+					  FROM headcoach h2
+					  JOIN nationalteam n2 ON h2.IDCard=n2.IDCardHeadCoach)
+	OR h.VictoryPercentage= (SELECT MIN(h3.VictoryPercentage) 
+							 FROM headcoach h3
+							 JOIN nationalteam n3 ON h3.IDCard =n3.IDCardHeadCoach)')	
+
+-- 30. Retorna els jugadors que han jugat en 2 equips o més i han estat convocats també a la selecció més d'un cop. Qunats jugadors hi ha en aquesta situació?
+SELECT COUNT(*) AS num_jugadores 
+FROM (
+    SELECT p.IDCard
+    FROM player p
+    JOIN player_franchise pf ON p.IDCard = pf.IDCardPlayer
+    JOIN nationalteam_player np ON p.IDCard = np.IDCard
+    GROUP BY p.IDCard
+    HAVING COUNT(DISTINCT pf.FranchiseName) >= 2 
+       AND COUNT(DISTINCT np.Year) >= 2  
+) AS jugador;
+
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (30,0,'SELECT COUNT(*) AS num_jugadores 
+FROM (
+    SELECT p.IDCard
+    FROM player p
+    JOIN player_franchise pf ON p.IDCard = pf.IDCardPlayer
+    JOIN nationalteam_player np ON p.IDCard = np.IDCard
+    GROUP BY p.IDCard
+    HAVING COUNT(DISTINCT pf.FranchiseName) >= 2 
+       AND COUNT(DISTINCT np.Year) >= 2  
+) AS jugador;
+'); 
+
+-- 1301. Quina és la mitja del salary dels jugadors per any? (Agafa l'any que han començat els seus contractes per fer les mitjes i arrodoneix el resultat a 2 decimals). Quin és el valor resultant dels decimals de l'any 2009?
+SELECT YEAR(startContract) AS any, ROUND(AVG(salary),2) AS mitjana_salary
+FROM player_franchise
+GROUP BY YEAR(startContract)
+ORDER BY YEAR(startContract);
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (1301,62,'SELECT YEAR(startContract) AS any, ROUND(AVG(salary),2) AS mitjana_salary FROM player_franchise GROUP BY YEAR(startContract) ORDER BY YEAR(startContract);'); 
+
+-- 1401. En quin estadi la capacitat excedeit en mes de 50 el nombre de seients?
+SELECT a.Name, (a.Capacity - COUNT(s.Number)) as dif FROM arena a  
+	JOIN seat s ON a.Name = s.ArenaName
+	GROUP BY a.Name
+	HAVING dif > 50
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (1401,'Smoothie King Center','SELECT a.Name, (a.Capacity - COUNT(s.Number)) as dif FROM arena a  
+	JOIN seat s ON a.Name = s.ArenaName
+	GROUP BY a.Name
+	HAVING dif > 50
+'); 
+
+-- 1701. Volem saber quants estadis hi ha per conferència. Mostra totes les dades relacionades amb la conferència i un nou camp amb el recompte d'estadis. Quants estadis tenim a la conferència oest?
+SELECT f.ConferenceName, c.GeographicZone, COUNT(DISTINCT f.ArenaName) AS recompteEstadis FROM franchise f
+	JOIN conference c ON f.ConferenceName =c.Name
+	GROUP BY f.ConferenceName  
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (1701,14,'SELECT f.ConferenceName, c.GeographicZone, COUNT(DISTINCT f.ArenaName) AS recompteEstadis FROM franchise f
+	JOIN conference c ON f.ConferenceName =c.Name
+	GROUP BY f.ConferenceName '); 
+
+-- 2001. Retorna els equips nacionals que han jugat a tots els anys on en tenim de registrats. Quants equips surten?
+SELECT n.Country FROM nationalteam n
+	GROUP BY n.Country
+	HAVING COUNT(DISTINCT n.Year) = (SELECT COUNT(DISTINCT Year) FROM nationalteam)
+
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (2001,4,'SELECT n.Country FROM nationalteam n
+	GROUP BY n.Country
+	HAVING COUNT(DISTINCT n.Year) = (SELECT COUNT(DISTINCT Year) FROM nationalteam)'); 
