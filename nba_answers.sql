@@ -104,7 +104,6 @@ FROM headcoach AS h
 JOIN person AS p ON h.IDCard = p.IDCard
 WHERE h.IDCard = 100000004;
 
-
 -- 11. Per cada equip retorna quantes vegades ha guanyat. Sempre que siguin 3 vegades o més. Quantes files retorna el select?
 SELECT  f.name, COUNT(f.name) AS contador FROM franchise AS f, franchise_season AS frans 
 WHERE f.name = frans.franchiseName AND frans.isWinner IS TRUE
@@ -124,11 +123,15 @@ INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (12,6,'SELE
 -- 13. Per un any específic retorna per cada equip la suma dels salaris dels seus jugadors. Asumeix que tots els jugadors que tenen un contracte en qualsevol data de l'any 2007 s'ha de contabilitzar. Quin és el presupost dels Houston Rockets?
 SELECT f.name,  SUM(pf.salary) FROM franchise AS f, player_franchise AS pf
 WHERE f.name = pf.franchiseName 
-AND (YEAR(pf.startContract) = 2007 OR YEAR(pf.EndContract) = 2007 OR (YEAR(pf.startContract) < 2007 AND YEAR(pf.EndContract) > 2007))
+AND YEAR(pf.startContract) = 2007
 GROUP BY f.name
-HAVING f.name = 'Houston Rockets'; -- Este no es correcto!!
+HAVING f.name = 'Houston Rockets';
 
-INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (13,'',''); -- esta mal el 111...
+INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (13,25654886,'SELECT f.name,  SUM(pf.salary) FROM franchise AS f, player_franchise AS pf
+WHERE f.name = pf.franchiseName 
+AND YEAR(pf.startContract) = 2007
+GROUP BY f.name
+HAVING f.name = "Houston Rockets";');
 
 -- 14. Retorna cada arena amb la seva capacitat, juntament amb el nombre de seients que tenen. Quants seients té el Footprint Center?
 SELECT ar.name, ar.capacity, COUNT(*) FROM arena AS ar, zone AS z, seat AS s 
@@ -198,3 +201,11 @@ ORDER BY f.name DESC
 LIMIT 2,1;
 
 INSERT INTO answer (IDquestion, answer_value, sql_query_used) VALUES (20,'Toronto Raptors','SELECT f.name FROM franchise AS f JOIN franchise_season AS fs ON f.name = fs.franchiseName GROUP BY f.name HAVING COUNT(DISTINCT fs.regularSeasonYear) = (SELECT COUNT(DISTINCT year) FROM regularseason) ORDER BY f.name DESC LIMIT 2,1;'); 
+
+
+-- 21. Per cada especialitat d'entrenadors assistents, retorna quants n'ha tingut cada franquícia. Qunatsmetges tenen els Brooklin Nets?
+SELECT COUNT(a.especiality), a.FranchiseName FROM assistantcoach a 
+	WHERE Especiality ="Doctor"
+	AND FranchiseName="Brooklyn Nets"
+	GROUP BY FranchiseName ;
+	
