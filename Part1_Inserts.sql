@@ -1,3 +1,5 @@
+-- Mariona Arenillas Vila, Alexandra Teodora Sofronie i Evelyn Aguayo Cayo
+
 INSERT INTO persona (DNI, Nom, Cognom1, Cognom2, Nacionalitat, Sexe, DataNaixement) VALUES
 ('12345678A', 'Juan', 'García', 'López', 'España', 'H', '1990-05-15'),
 ('23456789B', 'María', 'Martínez', 'Sánchez', 'España', 'D', '1992-08-22'),
