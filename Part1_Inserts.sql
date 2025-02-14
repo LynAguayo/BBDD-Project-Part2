@@ -1,4 +1,4 @@
--- Mariona Arenillas Vila, Alexandra Teodora Sofronie i Evelyn Aguayo Cayo
+USE LSG_NBA;
 
 INSERT INTO persona (DNI, Nom, Cognom1, Cognom2, Nacionalitat, Sexe, DataNaixement) VALUES
 ('12345678A', 'Juan', 'García', 'López', 'España', 'H', '1990-05-15'),
@@ -21,6 +21,53 @@ INSERT INTO persona (DNI, Nom, Cognom1, Cognom2, Nacionalitat, Sexe, DataNaixeme
 ('88990011R', 'Laura', 'Herrera', 'Gutiérrez', 'España', 'D', '1997-08-07'),
 ('99001122S', 'Sergio', 'Reyes', 'Cabrera', 'España', 'H', '1990-04-12'),
 ('00112233T', 'Marta', 'Vega', 'León', 'España', 'D', '1993-12-25');
+
+INSERT INTO pavello (Nom, Ciutat, Capacitat) VALUES
+('Staples Center', 'Los Ángeles', '20000'),
+('Chase Center', 'San Francisco', '18000'),
+('United Center', 'Chicago', '21000'),
+('TD Garden', 'Boston', '19000');
+
+INSERT INTO conferencia (Nom, ZonaGeografica) VALUES
+('Este', 'Este de Estados Unidos'),
+('Oeste', 'Oeste de Estados Unidos');
+
+INSERT INTO equip_nacional (Any, Pais) VALUES
+(2020, 'España'),
+(2021, 'Argentina'),
+(2022, 'México'),
+(2020, 'Colombia'),
+(2021, 'Venezuela'),
+(2022, 'España'),
+(2020, 'Estados Unidos'),
+(2021, 'Francia');
+
+INSERT INTO draft (Any) VALUES
+(2020),
+(2021),
+(2022),
+(2023);
+
+INSERT INTO temporada_regular (Any, Inici, Fi) VALUES
+(2020, '2020-10-20', '2021-04-10'),
+(2021, '2021-10-19', '2022-04-09'),
+(2022, '2022-10-18', '2023-04-08');
+
+INSERT INTO entrenador_principal (DNI, PercentatgeVictories, Salari, AnyEquipNacional, PaisEquipNacional) VALUES
+('12345678A', 65.50, 500000.00, 2020, 'España'),
+('23456789B', 70.25, 600000.00, 2021, 'Argentina'),
+('34567890C', 60.75, 450000.00, 2020, 'México'),
+('45678901D', 55.00, 400000.00, 2022, 'Colombia'),
+('56789012E', 80.00, 700000.00, 2021, 'Venezuela'),
+('67890123F', 50.50, 350000.00, 2020, 'España'),
+('78901234G', 75.25, 550000.00, 2022, 'España'),
+('89012345H', 65.00, 480000.00, 2021, 'España');
+
+INSERT INTO franquicia (Nom, Ciutat, Pressupost, AnillsNBA, DNIEntrenadorPrincipal, NomPavello, DNIPropietari, NomConferencia) VALUES
+('Lakers', 'Los Ángeles', 200000000.00, 17, '12345678A', 'Staples Center', '12345678A', 'Oeste'),
+('Warriors', 'San Francisco', 180000000.00, 7, '23456789B', 'Chase Center', '23456789B', 'Oeste'),
+('Bulls', 'Chicago', 150000000.00, 6, '34567890C', 'United Center', '34567890C', 'Este'),
+('Celtics', 'Boston', 170000000.00, 17, '45678901D', 'TD Garden', '45678901D', 'Este');
 
 INSERT INTO jugador (DNI, AnysPRO, UniversitatOrigen, NombreAnellsNBA, Dorsal, NomFranquicia) VALUES
 ('12345678A', 5, 'Universidad de Barcelona', 1, 23, 'Lakers'),
@@ -47,25 +94,19 @@ INSERT INTO preparador_fisic (DNI, Especialitat, Cap, NomFranquicia) VALUES
 ('00112233T', 'Recuperación', '99001122S', 'Celtics'),
 ('11223344K', 'Cardio', '88990011R', 'Heat');
 
-INSERT INTO entrenador_principal (DNI, PercentatgeVictories, Salari, AnyEquipNacional, PaisEquipNacional) VALUES
-('12345678A', 65.50, 500000.00, 2020, 'España'),
-('23456789B', 70.25, 600000.00, 2021, 'Argentina'),
-('34567890C', 60.75, 450000.00, 2020, 'México'),
-('45678901D', 55.00, 400000.00, 2022, 'Colombia'),
-('56789012E', 80.00, 700000.00, 2021, 'Venezuela'),
-('67890123F', 50.50, 350000.00, 2020, 'España'),
-('78901234G', 75.25, 550000.00, 2022, 'España'),
-('89012345H', 65.00, 480000.00, 2021, 'España');
-
-INSERT INTO equip_nacional (Any, Pais) VALUES
-(2020, 'España'),
-(2021, 'Argentina'),
-(2022, 'México'),
-(2020, 'Colombia'),
-(2021, 'Venezuela'),
-(2022, 'España'),
-(2020, 'Estados Unidos'),
-(2021, 'Francia');
+INSERT INTO franquicia_temporada (NomFranquicia, AnyTemporada, EsGuanyador) VALUES
+('Lakers', 2020, 1),
+('Warriors', 2021, 1),
+('Bulls', 2022, 0),
+('Celtics', 2020, 0),
+('Lakers', 2021, 0),
+('Warriors', 2022, 1),
+('Bulls', 2020, 0),
+('Celtics', 2021, 0),
+('Lakers', 2022, 1),
+('Warriors', 2020, 0),
+('Bulls', 2021, 0),
+('Celtics', 2022, 1);
 
 INSERT INTO equip_nacional_jugador (Any, Pais, DNI) VALUES
 (2020, 'España', '12345678A'),
@@ -76,39 +117,6 @@ INSERT INTO equip_nacional_jugador (Any, Pais, DNI) VALUES
 (2022, 'España', '67890123F'),
 (2020, 'Estados Unidos', '78901234G'),
 (2021, 'Francia', '89012345H');
-
-INSERT INTO draft (Any) VALUES
-(2020),
-(2021),
-(2022),
-(2023);
-
-INSERT INTO draft_jugador_franquicia (AnyDRAFT, DNIJugador, NomFranquicia, Posicio) VALUES
-(2020, '12345678A', 'Lakers', 1),
-(2021, '23456789B', 'Warriors', 2),
-(2022, '34567890C', 'Bulls', 3),
-(2020, '45678901D', 'Celtics', 4),
-(2021, '56789012E', 'Heat', 5),
-(2022, '67890123F', 'Spurs', 6),
-(2020, '78901234G', 'Lakers', 7),
-(2021, '89012345H', 'Knicks', 8),
-(2022, '90123456I', 'Bucks', 9),
-(2020, '01234567J', 'Nets', 10),
-(2021, '11223344K', 'Rockets', 11),
-(2022, '22334455L', 'Clippers', 12),
-(2020, '33445566M', 'Bulls', 13);
-
-INSERT INTO franquicia (Nom, Ciutat, Pressupost, AnillsNBA, DNIEntrenadorPrincipal, NomPavello, DNIPropietari, NomConferencia) VALUES
-('Lakers', 'Los Ángeles', 200000000.00, 17, '12345678A', 'Staples Center', '12345678A', 'Oeste'),
-('Warriors', 'San Francisco', 180000000.00, 7, '23456789B', 'Chase Center', '23456789B', 'Oeste'),
-('Bulls', 'Chicago', 150000000.00, 6, '34567890C', 'United Center', '34567890C', 'Este'),
-('Celtics', 'Boston', 170000000.00, 17, '45678901D', 'TD Garden', '45678901D', 'Este');
-
-INSERT INTO pavello (Nom, Ciutat, Capacitat) VALUES
-('Staples Center', 'Los Ángeles', '20000'),
-('Chase Center', 'San Francisco', '18000'),
-('United Center', 'Chicago', '21000'),
-('TD Garden', 'Boston', '19000');
 
 INSERT INTO grada (NomPavello, EsCoberta) VALUES
 ('Staples Center', 1),
@@ -158,25 +166,18 @@ INSERT INTO seient (Codi, NomPavello, Numero, Color) VALUES
 (29, 'Staples Center', 8, 'Negro'),
 (30, 'Chase Center', 8, 'Blanco');
 
-INSERT INTO conferencia (Nom, ZonaGeografica) VALUES
-('Este', 'Este de Estados Unidos'),
-('Oeste', 'Oeste de Estados Unidos');
+INSERT INTO draft_jugador_franquicia (AnyDRAFT, DNIJugador, NomFranquicia, Posicio) VALUES
+(2020, '12345678A', 'Lakers', 1),
+(2021, '23456789B', 'Warriors', 2),
+(2022, '34567890C', 'Bulls', 3),
+(2020, '45678901D', 'Celtics', 4),
+(2021, '56789012E', 'Heat', 5),
+(2022, '67890123F', 'Spurs', 6),
+(2020, '78901234G', 'Lakers', 7),
+(2021, '89012345H', 'Knicks', 8),
+(2022, '90123456I', 'Bucks', 9),
+(2020, '01234567J', 'Nets', 10),
+(2021, '11223344K', 'Rockets', 11),
+(2022, '22334455L', 'Clippers', 12),
+(2020, '33445566M', 'Bulls', 13);
 
-INSERT INTO franquicia_temporada (NomFranquicia, AnyTemporada, EsGuanyador) VALUES
-('Lakers', 2020, 1),
-('Warriors', 2021, 1),
-('Bulls', 2022, 0),
-('Celtics', 2020, 0),
-('Lakers', 2021, 0),
-('Warriors', 2022, 1),
-('Bulls', 2020, 0),
-('Celtics', 2021, 0),
-('Lakers', 2022, 1),
-('Warriors', 2020, 0),
-('Bulls', 2021, 0),
-('Celtics', 2022, 1);
-
-INSERT INTO temporada_regular (Any, Inici, Fi) VALUES
-(2020, '2020-10-20', '2021-04-10'),
-(2021, '2021-10-19', '2022-04-09'),
-(2022, '2022-10-18', '2023-04-08');
